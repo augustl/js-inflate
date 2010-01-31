@@ -721,29 +721,25 @@
   }
 
 
-  var JSInflate = function (data) {
-    this.data = data;
-  };
+  var JSInflate = {};
   GLOBAL.JSInflate = JSInflate;
 
-  JSInflate.prototype = {
-    inflate: function () {
-      var out, buff;
-      var i, j;
+  JSInflate.inflate = function (data) {
+    var out, buff;
+    var i, j;
 
-      zip_inflate_start();
-      zip_inflate_data = this.data;
-      zip_inflate_pos = 0;
+    zip_inflate_start();
+    zip_inflate_data = data;
+    zip_inflate_pos = 0;
 
-      buff = new Array(1024);
-      out = "";
-      while((i = zip_inflate_internal(buff, 0, buff.length)) > 0) {
-	for(j = 0; j < i; j++)
-	  out += String.fromCharCode(buff[j]);
-      }
-      zip_inflate_data = null; // G.C.
-      
-      return out;
+    buff = new Array(1024);
+    out = "";
+    while((i = zip_inflate_internal(buff, 0, buff.length)) > 0) {
+      for(j = 0; j < i; j++)
+	out += String.fromCharCode(buff[j]);
     }
+    zip_inflate_data = null; // G.C.
+    
+    return out;
   };
 }(this));

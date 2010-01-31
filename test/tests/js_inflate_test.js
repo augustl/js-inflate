@@ -16,9 +16,7 @@
 
   TestCase("JSInflateTest", {
     "test it": function () {
-      var i = new JSInflate(compressedBlob);
-      var result = i.inflate();
-      assertEquals(result, uncompressedBlob);
+      assertEquals(JSInflate.inflate(compressedBlob), uncompressedBlob);
     }
   });
 }());
