@@ -10,31 +10,31 @@
      *
      */
 
-    var zip_WSIZE = 32768;		// Sliding Window size
+    var zip_WSIZE = 32768;    // Sliding Window size
     var zip_STORED_BLOCK = 0;
     var zip_STATIC_TREES = 1;
     var zip_DYN_TREES    = 2;
 
     /* for inflate */
-    var zip_lbits = 9; 		// bits in base literal/length lookup table
-    var zip_dbits = 6; 		// bits in base distance lookup table
-    var zip_INBUFSIZ = 32768;	// Input buffer size
-    var zip_INBUF_EXTRA = 64;	// Extra buffer
+    var zip_lbits = 9;     // bits in base literal/length lookup table
+    var zip_dbits = 6;     // bits in base distance lookup table
+    var zip_INBUFSIZ = 32768;  // Input buffer size
+    var zip_INBUF_EXTRA = 64;  // Extra buffer
 
     /* variables (inflate) */
     var zip_slide;
-    var zip_wp;			// current position in slide
-    var zip_fixed_tl = null;	// inflate static
-    var zip_fixed_td;		// inflate static
-    var zip_fixed_bl, fixed_bd;	// inflate static
-    var zip_bit_buf;		// bit buffer
-    var zip_bit_len;		// bits in bit buffer
+    var zip_wp;      // current position in slide
+    var zip_fixed_tl = null;  // inflate static
+    var zip_fixed_td;    // inflate static
+    var zip_fixed_bl, fixed_bd;  // inflate static
+    var zip_bit_buf;    // bit buffer
+    var zip_bit_len;    // bits in bit buffer
     var zip_method;
     var zip_eof;
     var zip_copy_leng;
     var zip_copy_dist;
-    var zip_tl, zip_td;	// literal/length and distance decoder tables
-    var zip_bl, zip_bd;	// number of bits decoded by tl and td
+    var zip_tl, zip_td;  // literal/length and distance decoder tables
+    var zip_bl, zip_bd;  // number of bits decoded by tl and td
 
     var zip_inflate_data;
     var zip_inflate_pos;
@@ -79,21 +79,21 @@
         this.t = null; // (zip_HuftNode) pointer to next level of table
     }
 
-    function zip_HuftBuild(b,	// code lengths in bits (all assumed <= BMAX)
-                           n,	// number of codes (assumed <= N_MAX)
-                           s,	// number of simple-valued codes (0..s-1)
-                           d,	// list of base values for non-simple codes
-                           e,	// list of extra bits for non-simple codes
-                           mm	// maximum lookup bits
+    function zip_HuftBuild(b,  // code lengths in bits (all assumed <= BMAX)
+                           n,  // number of codes (assumed <= N_MAX)
+                           s,  // number of simple-valued codes (0..s-1)
+                           d,  // list of base values for non-simple codes
+                           e,  // list of extra bits for non-simple codes
+                           mm  // maximum lookup bits
                           ) {
         this.BMAX = 16;   // maximum bit length of any code
         this.N_MAX = 288; // maximum number of codes in any set
-        this.status = 0;	// 0: success, 1: incomplete table, 2: bad input
-        this.root = null;	// (zip_HuftList) starting table
-        this.m = 0;		// maximum lookup bits, returns actual
+        this.status = 0;  // 0: success, 1: incomplete table, 2: bad input
+        this.root = null;  // (zip_HuftList) starting table
+        this.m = 0;    // maximum lookup bits, returns actual
 
         /* Given a list of code lengths and a maximum table size, make a set of
-           tables to decode that set of codes.	Return zero on success, one if
+           tables to decode that set of codes.  Return zero on success, one if
            the given code set is incomplete (the tables are still built in this
            case), two if the input is invalid (all zero length codes or an
            oversubscribed set of lengths), and three if not enough memory.
@@ -101,29 +101,29 @@
            so that no bits beyond that code are fetched when that code is
            decoded. */
         {
-            var a;			// counter for codes of length k
-            var c = new Array(this.BMAX+1);	// bit length count table
-            var el;			// length of EOB code (value 256)
-            var f;			// i repeats in table every f entries
-            var g;			// maximum code length
-            var h;			// table level
-            var i;			// counter, current code
-            var j;			// counter
-            var k;			// number of bits in current code
-            var lx = new Array(this.BMAX+1);	// stack of bits per table
-            var p;			// pointer into c[], b[], or v[]
-            var pidx;		// index of p
-            var q;			// (zip_HuftNode) points to current table
+            var a;      // counter for codes of length k
+            var c = new Array(this.BMAX+1);  // bit length count table
+            var el;      // length of EOB code (value 256)
+            var f;      // i repeats in table every f entries
+            var g;      // maximum code length
+            var h;      // table level
+            var i;      // counter, current code
+            var j;      // counter
+            var k;      // number of bits in current code
+            var lx = new Array(this.BMAX+1);  // stack of bits per table
+            var p;      // pointer into c[], b[], or v[]
+            var pidx;    // index of p
+            var q;      // (zip_HuftNode) points to current table
             var r = new zip_HuftNode(); // table entry for structure assignment
             var u = new Array(this.BMAX); // zip_HuftNode[BMAX][]  table stack
             var v = new Array(this.N_MAX); // values in order of bit length
             var w;
             var x = new Array(this.BMAX+1);// bit offsets, then code stack
-            var xp;			// pointer into x or c
-            var y;			// number of dummy codes added
-            var z;			// number of entries in current table
+            var xp;      // pointer into x or c
+            var y;      // number of dummy codes added
+            var z;      // number of entries in current table
             var o;
-            var tail;		// (zip_HuftList)
+            var tail;    // (zip_HuftList)
 
             tail = this.root = null;
             for(i = 0; i < c.length; i++)
@@ -142,10 +142,10 @@
             p = b; pidx = 0;
             i = n;
             do {
-                c[p[pidx]]++;	// assume all entries <= BMAX
+                c[p[pidx]]++;  // assume all entries <= BMAX
                 pidx++;
             } while(--i > 0);
-            if(c[0] == n) {	// null input--all zero length codes
+            if(c[0] == n) {  // null input--all zero length codes
                 this.root = null;
                 this.m = 0;
                 this.status = 0;
@@ -156,20 +156,20 @@
             for(j = 1; j <= this.BMAX; j++)
                 if(c[j] != 0)
                     break;
-            k = j;			// minimum code length
+            k = j;      // minimum code length
             if(mm < j)
                 mm = j;
             for(i = this.BMAX; i != 0; i--)
                 if(c[i] != 0)
                     break;
-            g = i;			// maximum code length
+            g = i;      // maximum code length
             if(mm > i)
                 mm = i;
 
             // Adjust last length count to fill out codes, if needed
             for(y = 1 << j; j < i; j++, y <<= 1)
                 if((y -= c[j]) < 0) {
-                    this.status = 2;	// bad input: more codes than bits
+                    this.status = 2;  // bad input: more codes than bits
                     this.m = mm;
                     return;
                 }
@@ -185,7 +185,7 @@
             p = c;
             pidx = 1;
             xp = 2;
-            while(--i > 0)		// note that i == g from above
+            while(--i > 0)    // note that i == g from above
                 x[xp++] = (j += p[pidx++]);
 
             // Make a table of values in order of bit lengths
@@ -195,15 +195,15 @@
                 if((j = p[pidx++]) != 0)
                     v[x[j]++] = i;
             } while(++i < n);
-            n = x[g];			// set n to length of v
+            n = x[g];      // set n to length of v
 
             // Generate the Huffman codes and for each, make the table entries
-            x[0] = i = 0;		// first Huffman code is zero
-            p = v; pidx = 0;		// grab values in bit order
-            h = -1;			// no tables yet--level -1
-            w = lx[0] = 0;		// no bits decoded yet
-            q = null;			// ditto
-            z = 0;			// ditto
+            x[0] = i = 0;    // first Huffman code is zero
+            p = v; pidx = 0;    // grab values in bit order
+            h = -1;      // no tables yet--level -1
+            w = lx[0] = 0;    // no bits decoded yet
+            q = null;      // ditto
+            z = 0;      // ditto
 
             // go through the bit lengths (k already is bits in shortest code)
             for(; k <= g; k++) {
@@ -219,17 +219,17 @@
                         z = (z = g - w) > mm ? mm : z; // upper limit
                         if((f = 1 << (j = k - w)) > a + 1) { // try a k-w bit table
                             // too few codes for k-w bit table
-                            f -= a + 1;	// deduct codes from patterns left
+                            f -= a + 1;  // deduct codes from patterns left
                             xp = k;
                             while(++j < z) { // try smaller tables up to z bits
                                 if((f <<= 1) <= c[++xp])
-                                    break;	// enough codes to use up j bits
-                                f -= c[xp];	// else deduct codes from patterns
+                                    break;  // enough codes to use up j bits
+                                f -= c[xp];  // else deduct codes from patterns
                             }
                         }
                         if(w + j > el && w < el)
-                            j = el - w;	// make EOB code end at table
-                        z = 1 << j;	// table entries for j-bit table
+                            j = el - w;  // make EOB code end at table
+                        z = 1 << j;  // table entries for j-bit table
                         lx[1 + h] = j; // set table size in stack
 
                         // allocate and link in new table
@@ -244,14 +244,14 @@
                             tail = tail.next = new zip_HuftList();
                         tail.next = null;
                         tail.list = q;
-                        u[h] = q;	// table starts after link
+                        u[h] = q;  // table starts after link
 
                         /* connect to last table, if there is one */
                         if(h > 0) {
-                            x[h] = i;		// save pattern for backing up
-                            r.b = lx[h];	// bits to dump before this table
-                            r.e = 16 + j;	// bits in this table
-                            r.t = q;		// pointer to this table
+                            x[h] = i;    // save pattern for backing up
+                            r.b = lx[h];  // bits to dump before this table
+                            r.e = 16 + j;  // bits in this table
+                            r.t = q;    // pointer to this table
                             j = (i & ((1 << w) - 1)) >> (w - lx[h]);
                             u[h-1][j].e = r.e;
                             u[h-1][j].b = r.b;
@@ -263,12 +263,12 @@
                     // set up table entry in r
                     r.b = k - w;
                     if(pidx >= n)
-                        r.e = 99;		// out of values--invalid code
+                        r.e = 99;    // out of values--invalid code
                     else if(p[pidx] < s) {
                         r.e = (p[pidx] < 256 ? 16 : 15); // 256 is end-of-block code
-                        r.n = p[pidx++];	// simple code is just the value
+                        r.n = p[pidx++];  // simple code is just the value
                     } else {
-                        r.e = e[p[pidx] - s];	// non-simple--look up in lists
+                        r.e = e[p[pidx] - s];  // non-simple--look up in lists
                         r.n = d[p[pidx++] - s];
                     }
 
@@ -288,7 +288,7 @@
 
                     // backup over finished tables
                     while((i & ((1 << w) - 1)) != x[h]) {
-                        w -= lx[h];		// don't need to update q
+                        w -= lx[h];    // don't need to update q
                         h--;
                     }
                 }
@@ -330,8 +330,8 @@
     function zip_inflate_codes(buff, off, size) {
         /* inflate (decompress) the codes in a deflated (compressed) block.
            Return an error code or zero if it all goes ok. */
-        var e;		// table entry flag/number of extra bits
-        var t;		// (zip_HuftNode) pointer to table entry
+        var e;    // table entry flag/number of extra bits
+        var t;    // (zip_HuftNode) pointer to table entry
         var n;
 
         if(size == 0)
@@ -339,7 +339,7 @@
 
         // inflate the coded data
         n = 0;
-        for(;;) {			// do until end of block
+        for(;;) {      // do until end of block
             zip_NEEDBITS(zip_bl);
             t = zip_tl.list[zip_GETBITS(zip_bl)];
             e = t.e;
@@ -354,7 +354,7 @@
             }
             zip_DUMPBITS(t.b);
 
-            if(e == 16) {		// then it's a literal
+            if(e == 16) {    // then it's a literal
                 zip_wp &= zip_WSIZE - 1;
                 buff[off + n++] = zip_slide[zip_wp++] = t.n;
                 if(n == size)
@@ -423,7 +423,7 @@
         zip_DUMPBITS(16);
         zip_NEEDBITS(16);
         if(n != ((~zip_bit_buf) & 0xffff))
-            return -1;			// error in compressed data
+            return -1;      // error in compressed data
         zip_DUMPBITS(16);
 
         // read and output the compressed data
@@ -451,9 +451,9 @@
 
         // if first time, set up tables for fixed blocks
         if(zip_fixed_tl == null) {
-            var i;			// temporary variable
-            var l = new Array(288);	// length list for huft_build
-            var h;	// zip_HuftBuild
+            var i;      // temporary variable
+            var l = new Array(288);  // length list for huft_build
+            var h;  // zip_HuftBuild
 
             // literal table
             for(i = 0; i < 144; i++)
@@ -462,7 +462,7 @@
                 l[i] = 9;
             for(; i < 280; i++)
                 l[i] = 7;
-            for(; i < 288; i++)	// make a complete, but wrong code set
+            for(; i < 288; i++)  // make a complete, but wrong code set
                 l[i] = 8;
             zip_fixed_bl = 7;
 
@@ -476,7 +476,7 @@
             zip_fixed_bl = h.m;
 
             // distance table
-            for(i = 0; i < 30; i++)	// make an incomplete code set
+            for(i = 0; i < 30; i++)  // make an incomplete code set
                 l[i] = 5;
             zip_fixed_bd = 5;
 
@@ -499,32 +499,32 @@
 
     function zip_inflate_dynamic(buff, off, size) {
         // decompress an inflated type 2 (dynamic Huffman codes) block.
-        var i;		// temporary variables
+        var i;    // temporary variables
         var j;
-        var l;		// last length
-        var n;		// number of lengths to get
-        var t;		// (zip_HuftNode) literal/length code table
-        var nb;		// number of bit length codes
-        var nl;		// number of literal/length codes
-        var nd;		// number of distance codes
+        var l;    // last length
+        var n;    // number of lengths to get
+        var t;    // (zip_HuftNode) literal/length code table
+        var nb;    // number of bit length codes
+        var nl;    // number of literal/length codes
+        var nd;    // number of distance codes
         var ll = new Array(286+30); // literal/length and distance code lengths
-        var h;		// (zip_HuftBuild)
+        var h;    // (zip_HuftBuild)
 
         for(i = 0; i < ll.length; i++)
             ll[i] = 0;
 
         // read in table lengths
         zip_NEEDBITS(5);
-        nl = 257 + zip_GETBITS(5);	// number of literal/length codes
+        nl = 257 + zip_GETBITS(5);  // number of literal/length codes
         zip_DUMPBITS(5);
         zip_NEEDBITS(5);
-        nd = 1 + zip_GETBITS(5);	// number of distance codes
+        nd = 1 + zip_GETBITS(5);  // number of distance codes
         zip_DUMPBITS(5);
         zip_NEEDBITS(4);
-        nb = 4 + zip_GETBITS(4);	// number of bit length codes
+        nb = 4 + zip_GETBITS(4);  // number of bit length codes
         zip_DUMPBITS(4);
         if(nl > 286 || nd > 30)
-            return -1;		// bad lengths
+            return -1;    // bad lengths
 
         // read in bit-length-code lengths
         for(j = 0; j < nb; j++)
@@ -540,7 +540,7 @@
         zip_bl = 7;
         h = new zip_HuftBuild(ll, 19, 19, null, null, zip_bl);
         if(h.status != 0)
-            return -1;	// incomplete code set
+            return -1;  // incomplete code set
 
         zip_tl = h.root;
         zip_bl = h.m;
@@ -554,9 +554,9 @@
             j = t.b;
             zip_DUMPBITS(j);
             j = t.n;
-            if(j < 16)		// length of code in bits (0..15)
-                ll[i++] = l = j;	// save last length in l
-            else if(j == 16) {	// repeat last length 3 to 6 times
+            if(j < 16)    // length of code in bits (0..15)
+                ll[i++] = l = j;  // save last length in l
+            else if(j == 16) {  // repeat last length 3 to 6 times
                 zip_NEEDBITS(2);
                 j = 3 + zip_GETBITS(2);
                 zip_DUMPBITS(2);
@@ -564,7 +564,7 @@
                     return -1;
                 while(j-- > 0)
                     ll[i++] = l;
-            } else if(j == 17) {	// 3 to 10 zero length codes
+            } else if(j == 17) {  // 3 to 10 zero length codes
                 zip_NEEDBITS(3);
                 j = 3 + zip_GETBITS(3);
                 zip_DUMPBITS(3);
@@ -573,7 +573,7 @@
                 while(j-- > 0)
                     ll[i++] = 0;
                 l = 0;
-            } else {		// j == 18: 11 to 138 zero length codes
+            } else {    // j == 18: 11 to 138 zero length codes
                 zip_NEEDBITS(7);
                 j = 11 + zip_GETBITS(7);
                 zip_DUMPBITS(7);
@@ -588,12 +588,12 @@
         // build the decoding tables for literal/length and distance codes
         zip_bl = zip_lbits;
         h = new zip_HuftBuild(ll, nl, 257, zip_cplens, zip_cplext, zip_bl);
-        if(zip_bl == 0)	// no literals or lengths
+        if(zip_bl == 0)  // no literals or lengths
             h.status = 1;
         if(h.status != 0) {
             if(h.status == 1)
                 ;// **incomplete literal tree**
-            return -1;		// incomplete code set
+            return -1;    // incomplete code set
         }
         zip_tl = h.root;
         zip_bl = h.m;
@@ -741,5 +741,42 @@
         zip_inflate_data = null; // G.C.
 
         return out;
+    };
+
+    function write_inflated_internal(ws, buff) {
+      var bytesInflated = zip_inflate_internal(buff, 0, buff.length);
+      if (bytesInflated > 0) {
+        var out = "";
+        for(j = 0; j < bytesInflated; j++) {
+           out += String.fromCharCode(buff[j]);
+        }
+        ws.write(out);
+      }
+      return bytesInflated;
+    };
+
+    JSInflate.inflateStream = function(data, unzipFile, fs, callback) {
+      var out, buff, bytesWritten;
+
+      zip_inflate_start();
+      zip_inflate_data = data;
+      zip_inflate_pos = 0;
+      bytesWritten = 0;
+
+      var ws = fs.createWriteStream(unzipFile);
+      buff = new Array(1024);
+      var bytesInflated = 0;
+
+      ws.on('drain', function() {
+        bytesInflated = write_inflated_internal(ws, buff);
+        if (bytesInflated > 0) {
+          bytesWritten += bytesInflated;
+        } else {
+          zip_inflate_data = null;
+          callback(bytesWritten);
+        }
+      });
+
+      bytesWritten += write_inflated_internal(ws, buff);
     };
 }(this));
