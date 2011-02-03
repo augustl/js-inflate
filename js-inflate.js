@@ -744,39 +744,39 @@
     };
 
     function write_inflated_internal(ws, buff) {
-      var bytesInflated = zip_inflate_internal(buff, 0, buff.length);
-      if (bytesInflated > 0) {
-        var out = "";
-        for(j = 0; j < bytesInflated; j++) {
-           out += String.fromCharCode(buff[j]);
+        var bytesInflated = zip_inflate_internal(buff, 0, buff.length);
+        if (bytesInflated > 0) {
+            var out = "";
+            for(j = 0; j < bytesInflated; j++) {
+                out += String.fromCharCode(buff[j]);
+            }
+            ws.write(out);
         }
-        ws.write(out);
-      }
-      return bytesInflated;
+        return bytesInflated;
     };
 
     JSInflate.inflateStream = function(data, unzipFile, fs, callback) {
-      var out, buff, bytesWritten;
+        var out, buff, bytesWritten;
 
-      zip_inflate_start();
-      zip_inflate_data = data;
-      zip_inflate_pos = 0;
-      bytesWritten = 0;
+        zip_inflate_start();
+        zip_inflate_data = data;
+        zip_inflate_pos = 0;
+        bytesWritten = 0;
 
-      var ws = fs.createWriteStream(unzipFile);
-      buff = new Array(1024);
-      var bytesInflated = 0;
+        var ws = fs.createWriteStream(unzipFile);
+        buff = new Array(1024);
+        var bytesInflated = 0;
 
-      ws.on('drain', function() {
-        bytesInflated = write_inflated_internal(ws, buff);
-        if (bytesInflated > 0) {
-          bytesWritten += bytesInflated;
-        } else {
-          zip_inflate_data = null;
-          callback(bytesWritten);
-        }
-      });
+        ws.on('drain', function() {
+            bytesInflated = write_inflated_internal(ws, buff);
+            if (bytesInflated > 0) {
+                bytesWritten += bytesInflated;
+            } else {
+                zip_inflate_data = null;
+                callback(bytesWritten);
+            }
+        });
 
-      bytesWritten += write_inflated_internal(ws, buff);
+        bytesWritten += write_inflated_internal(ws, buff);
     };
 }(this));
