@@ -722,7 +722,11 @@
 
 
     var JSInflate = {};
-    GLOBAL.JSInflate = JSInflate;
+    if (typeof(module) == "object") {
+        module.exports = JSInflate;
+    } else {
+        GLOBAL.JSInflate = JSInflate;
+    }
 
     JSInflate.inflate = function (data) {
         var out, buff;
