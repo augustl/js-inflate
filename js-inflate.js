@@ -724,6 +724,7 @@
     var JSInflate = {};
     if (typeof(module) == "object") {
         module.exports = JSInflate;
+        var fs = require("fs");
     } else {
         GLOBAL.JSInflate = JSInflate;
     }
@@ -759,7 +760,7 @@
         return bytesInflated;
     };
 
-    JSInflate.inflateStream = function(data, unzipFile, fs, callback) {
+    JSInflate.inflateStream = function(data, unzipFile, callback) {
         var out, buff, bytesWritten;
 
         zip_inflate_start();

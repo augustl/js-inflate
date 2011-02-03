@@ -26,7 +26,7 @@ testInflateStream = function() {
 
   var outputFile = '/tmp/test_data';
 
-  JSInflate.inflateStream(compressedBlob, outputFile, fs, function(bytesWritten) {
+  JSInflate.inflateStream(compressedBlob, outputFile, function(bytesWritten) {
     assert.equal(bytesWritten, 4299);
     fs.readFile(outputFile, function (err, data) {
       if (err) throw err;
