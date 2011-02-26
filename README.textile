@@ -2,8 +2,7 @@ h2. JSInflate
 
 A JavaScript library for inflating deflated binary blobs. Can be used to uncompress Zip files, for example.
 
-<pre><code>var inflater = new JSInflate(compressedBlob);
-var result = inflater.inflate();</code></pre>
+<pre><code>var result = JSInflate.inflate(compressedBlob);</code></pre>
 
 That's all there is to it!
 
