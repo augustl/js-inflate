@@ -3,28 +3,26 @@
 */
 
 var fs = require('fs');
-var JSInflate = require('./../../js-inflate')
-  , assert = require('assert');
+var JSInflate = require('./../../js-inflate');
+var assert = require('assert');
 
-console.log(JSInflate);
 
-testInflateStream = function() {
-  uncompressedBlob = fs.readFileSync(__dirname + "/fixtures/uncompressed.bin", "binary");
-  compressedBlob = fs.readFileSync(__dirname + "/fixtures/compressed.bin", "binary");
+(function () {
+    uncompressedBlob = fs.readFileSync(__dirname + "/fixtures/uncompressed.bin", "binary");
+    compressedBlob = fs.readFileSync(__dirname + "/fixtures/compressed.bin", "binary");
 
-  var outputFile = '/tmp/test_data';
+    var outputFile = '/tmp/test_data';
 
-  JSInflate.inflateStream(compressedBlob, outputFile, function(bytesWritten) {
-    assert.equal(bytesWritten, 4299);
-    fs.readFile(outputFile, function (err, data) {
-      if (err) throw err;
-      assert.equal(data, uncompressedBlob);
-      fs.unlink(outputFile, function(ulErr) {
-         if (ulErr) throw ulErr;
-         console.log("test complete");
-      })
+    JSInflate.inflateStream(compressedBlob, outputFile, function(bytesWritten) {
+        assert.equal(bytesWritten, 4299);
+        fs.readFile(outputFile, function (err, data) {
+            if (err) throw err;
+            assert.equal(data, uncompressedBlob);
+            fs.unlink(outputFile, function(ulErr) {
+                if (ulErr) throw ulErr;
+                console.log("test complete");
+            })
+        });
     });
-  });
-}
+}());
 
-testInflateStream();
