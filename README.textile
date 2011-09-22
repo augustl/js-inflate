@@ -10,7 +10,7 @@ The test suite runs on Chrome 4, FireFox 3.6, IE7, Opera 10 and Safari 4.0.4. [T
 
 h2. Alternatives
 
-You might want to check out https://github.com/dankogai/js-deflate too. It has inflate as well as deflate.
+You might want to check out "https://github.com/dankogai/js-deflate":https://github.com/dankogai/js-deflate too. It has inflate as well as deflate.
 
 h2. node.js, commonjs, etc.
 
