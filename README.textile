@@ -6,3 +6,5 @@ Here's a few alternatives:
 
 * https://github.com/imaya/zlib.js
 * https://github.com/nodeca/pako
+
+The old code is available here: https://github.com/augustl/js-inflate/tree/3a28d0c180ebbf33c8a7a783d2f303f8571bfae7
